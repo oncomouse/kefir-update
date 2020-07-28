@@ -8,19 +8,19 @@
     factory(root.Kefir);
   }
 }(typeof self !== 'undefined' ? self : this, function (Kefir) {
-  Kefir.update = function () {
-    var initValue = arguments.slice(0, 1)
-    var args = arguments.slice(1)
+  Kefir.update = function (initValue) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
     var mutations = args
       .reduce(function (mutations, arg) {
         var sources = arg.slice(0, -1)
         var newValue = arg.slice(-1)
-        return mutations.append(Kefir.zip(sources).map(e => ({event: e, mutation: newValue})))
+        return mutations.concat([Kefir.zip(sources).map(e => ({event: e, mutation: newValue}))])
       }, [])
 
-    return kefir
+    return Kefir
       .merge(mutations)
-      .scan
-      (function (prev, {event, mutation}) {return mutation.apply(undefined, [prev].concat(event)), initValue});
+      .scan(function (prev, {event, mutation}) {return mutation.apply(undefined, [prev].concat(event)), initValue});
   }
 }));
