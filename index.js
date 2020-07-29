@@ -1,26 +1,28 @@
-// Based on: https://stackoverflow.com/questions/31768457/idiomatic-way-to-mutate-a-property-with-multiple-events-using-kefir
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define(['kefir'], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('kefir'));
-  } else {
-    factory(root.Kefir);
-  }
-}(typeof self !== 'undefined' ? self : this, function (Kefir) {
-  Kefir.update = function (initValue) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-    var mutations = args
-      .reduce(function (mutations, arg) {
-        var sources = arg.slice(0, -1)
-        var newValue = arg.slice(-1)
-        return mutations.concat([Kefir.zip(sources).map(e => ({event: e, mutation: newValue}))])
-      }, [])
+import Kefir from 'kefir'
 
-    return Kefir
-      .merge(mutations)
-      .scan(function (prev, {event, mutation}) {return mutation.apply(undefined, [prev].concat(event)), initValue});
+var asFunction = f => (typeof f === 'function') ? f : () => f
+var isArray = xs => xs instanceof Array
+var isRawPattern = xs => isArray(xs[0])
+function extractPattern(pattern) {
+  if(!isArray(pattern)) {
+    return Kefir.never
   }
-}));
+  if(isRawPattern(pattern)) {
+    return pattern
+  }
+  return [pattern.slice(0,-1), asFunction(pattern.slice(-1)[0])]
+}
+const append = (...args) => [...args]
+Kefir.update = function(initValue, ...patterns) {
+  return Kefir.merge(patterns
+    .map(extractPattern)
+    .map(([sources, f]) => Kefir.combine(sources, append).map(e => ({
+      event: e,
+      mutation: f
+    })))
+  )
+  .scan(
+    (prev, {event, mutation}) => mutation.apply(undefined, [prev].concat(event)),
+    initValue
+  )
+}
