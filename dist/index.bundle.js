@@ -2,10 +2,6 @@
 (function (global){
 "use strict";
 
-var _kefir = _interopRequireDefault((typeof window !== "undefined" ? window['Kefir'] : typeof global !== "undefined" ? global['Kefir'] : null));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -17,6 +13,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var Kefir = (typeof window !== "undefined" ? window['Kefir'] : typeof global !== "undefined" ? global['Kefir'] : null);
 
 var asFunction = function asFunction(f) {
   return typeof f === 'function' ? f : function () {
@@ -34,7 +32,7 @@ var isRawPattern = function isRawPattern(xs) {
 
 function extractPattern(pattern) {
   if (!isArray(pattern)) {
-    return _kefir["default"].never;
+    return Kefir.never;
   }
 
   if (isRawPattern(pattern)) {
@@ -52,17 +50,17 @@ var append = function append() {
   return [].concat(args);
 };
 
-_kefir["default"].update = function (initValue) {
+Kefir.update = function (initValue) {
   for (var _len2 = arguments.length, patterns = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
     patterns[_key2 - 1] = arguments[_key2];
   }
 
-  return _kefir["default"].merge(patterns.map(extractPattern).map(function (_ref) {
+  return Kefir.merge(patterns.map(extractPattern).map(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         sources = _ref2[0],
         f = _ref2[1];
 
-    return _kefir["default"].combine(sources, append).map(function (e) {
+    return Kefir.combine(sources, append).map(function (e) {
       return {
         event: e,
         mutation: f

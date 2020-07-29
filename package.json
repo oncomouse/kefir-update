@@ -28,6 +28,6 @@
     "browserify-shim": "^3.8.14"
   },
   "browserify-shim": {
-    "kefir": "global:Kefir"
+    "kefir": {"exports": "global:Kefir"}
   }
 }

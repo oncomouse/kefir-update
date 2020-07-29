@@ -1,8 +1,8 @@
-import Kefir from 'kefir'
+const Kefir = require('kefir')
 
-var asFunction = f => (typeof f === 'function') ? f : () => f
-var isArray = xs => xs instanceof Array
-var isRawPattern = xs => isArray(xs[0])
+const asFunction = f => (typeof f === 'function') ? f : () => f
+const isArray = xs => xs instanceof Array
+const isRawPattern = xs => isArray(xs[0])
 function extractPattern(pattern) {
   if(!isArray(pattern)) {
     return Kefir.never
